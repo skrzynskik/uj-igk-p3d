@@ -5,6 +5,8 @@
 #include "app.h"
 
 #include <iostream>
+#include <glm/glm.hpp>
+#include <glm/gtc/constants.hpp>
 #include <vector>
 #include <tuple>
 #include <numeric>
@@ -65,6 +67,39 @@ void SimpleShapeApplication::init() {
     glBindBuffer(GL_ARRAY_BUFFER, v_buffer_handle);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    //Generating buffer for modifer_uniform in vs_shader
+    GLuint modifier_uniform_buffer_handle;
+    glGenBuffers(1, &modifier_uniform_buffer_handle);
+    glBindBuffer(GL_UNIFORM_BUFFER, modifier_uniform_buffer_handle);
+    glBufferData(GL_UNIFORM_BUFFER, 8 * sizeof(float), NULL, GL_STATIC_DRAW);
+    glBindBufferBase(GL_UNIFORM_BUFFER, 0, modifier_uniform_buffer_handle);
+
+    float strength = 0.75;
+    float color[3] = {1.0, 1.0, 2.0};
+
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, 4*sizeof(float), &strength);
+    glBufferSubData(GL_UNIFORM_BUFFER, 4*sizeof(float), 4*sizeof(float), color);
+
+    //Generating buffer for transformation_uniform in vertex shader
+    GLuint transformations_uniform_buffer_handle;
+    glGenBuffers(1, &transformations_uniform_buffer_handle);
+    glBindBuffer(GL_UNIFORM_BUFFER, transformations_uniform_buffer_handle);
+    glBufferData(GL_UNIFORM_BUFFER, 16 * sizeof(float), NULL, GL_STATIC_DRAW);
+    glBindBufferBase(GL_UNIFORM_BUFFER, 1, transformations_uniform_buffer_handle);
+
+    float theta = 1.0 * glm::pi<float>()/6.0f;
+    auto cs = std::cos(theta);
+    auto ss = std::sin(theta);  
+    glm::mat2 rot{cs,ss,-ss,cs};
+    glm::vec2 trans{0.0,  -0.25};
+    glm::vec2 scale{0.5, 0.5};
+
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(scale), &scale);
+    glBufferSubData(GL_UNIFORM_BUFFER, 4 * sizeof(float), sizeof(trans), &trans);
+    glBufferSubData(GL_UNIFORM_BUFFER, 8 * sizeof(float), sizeof(rot), &rot);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
 
     // This setups a Vertex Array Object (VAO) that  encapsulates
     // the state of all vertex buffers needed for rendering
