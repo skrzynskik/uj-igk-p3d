@@ -8,6 +8,7 @@
 #include <vector>
 #include "glm/glm.hpp"
 #include "glm/gtc/constants.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 #include "glad/gl.h"
 
 #include "Application/utils.h"
@@ -55,29 +56,29 @@ void SimpleShapeApplication::init() {
     glBindBufferBase(GL_UNIFORM_BUFFER, 0, modifier_u_buffer_handle);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-    GLuint transformations_u_buffer_handle;
+    GLuint tranformations_pvm_u_buffer_handle;
     GLuint transformationsBlockIndex = glGetUniformBlockIndex(program, "Transformations");
-    glGenBuffers(1, &transformations_u_buffer_handle);
-    glBindBuffer(GL_UNIFORM_BUFFER, transformations_u_buffer_handle);
+    glGenBuffers(1, &tranformations_pvm_u_buffer_handle);
+    glBindBuffer(GL_UNIFORM_BUFFER, tranformations_pvm_u_buffer_handle);
     glBufferData(GL_UNIFORM_BUFFER, 16 * sizeof(GLfloat), 0, GL_STATIC_DRAW);
-    glBindBufferBase(GL_UNIFORM_BUFFER, 1, transformations_u_buffer_handle);
+    glBindBufferBase(GL_UNIFORM_BUFFER, 1, tranformations_pvm_u_buffer_handle);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-    GLuint v_buffer_handle;
-    glGenBuffers(1, &v_buffer_handle);
-    glBindBuffer(GL_ARRAY_BUFFER, v_buffer_handle);
+    GLuint vertex_buffer_object;
+    glGenBuffers(1, &vertex_buffer_object);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    GLuint i_buffer_handle;
-    glGenBuffers(1, &i_buffer_handle);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, i_buffer_handle);
+    GLuint index_buffer_handle;
+    glGenBuffers(1, &index_buffer_handle);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_handle);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLshort), indices.data(), GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     glGenVertexArrays(1, &vao_);
     glBindVertexArray(vao_);
-    glBindBuffer(GL_ARRAY_BUFFER, v_buffer_handle);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat),reinterpret_cast<GLvoid*>(0));
 
@@ -95,20 +96,30 @@ void SimpleShapeApplication::init() {
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 
-    glBindBuffer(GL_UNIFORM_BUFFER, transformations_u_buffer_handle);
-    float theta = 10.0f * glm::pi<float>() / 180.0f;
-    auto cs = std::cos(theta);
-    auto ss = std::sin(theta);
-    glm::vec2 scale{ 0.5, 0.5 };
-    glm::vec2 trans{ 0.0,  0.25 };
-    glm::mat2 rot{ cs,ss,-ss,cs };
-    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(scale), &scale);
-    glBufferSubData(GL_UNIFORM_BUFFER, 4 * sizeof(float), sizeof(trans), &trans);
-    glBufferSubData(GL_UNIFORM_BUFFER, 8 * sizeof(float), sizeof(rot), &rot);
+    glBindBuffer(GL_UNIFORM_BUFFER, tranformations_pvm_u_buffer_handle);
+
+    glm::mat4 PVM(1.0f);
+    glm::mat4 M(1.0f);
+    glm::vec3 camera_pos = { 0,2,2 };
+    glm::vec3 zero = { 0,0,0 };
+    glm::vec3 up_vec = { 0,0,1 };
+    glm::mat4 V;
+    glm::mat4 P;
+    V = glm::lookAt(camera_pos, zero, up_vec);
+    P = glm::perspective(1.0f * glm::radians(45.0), 1.0 * frame_buffer_size().first / frame_buffer_size().second, 0.1, 100.0);
+
+    PVM = P * V * M;
+
+    glm::mat4 T = glm::translate(PVM, glm::vec3(1, 1, 0));
+
+    PVM = T;
+
+
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(PVM), &PVM);
     glUniformBlockBinding(program, transformationsBlockIndex, 1);
 
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, i_buffer_handle);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_handle);
     glBindVertexArray(0);
     glClearColor(0.81f, 0.81f, 0.8f, 1.0f);
 
