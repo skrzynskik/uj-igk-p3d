@@ -5,11 +5,6 @@ layout(location = 1) in  vec3 a_vertex_color;
 
 out vec3 vertex_color;
 
-layout(std140) uniform Modifier{
-	float strength;
-	vec3  color;
-};
-
 layout(std140) uniform Transformations{
 	mat4 PVM;
 };

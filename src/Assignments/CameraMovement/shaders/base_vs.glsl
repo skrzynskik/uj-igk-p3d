@@ -1,14 +1,9 @@
-#version 410
+#version 420
 
 layout(location = 0) in  vec4 a_vertex_position;
 layout(location = 1) in  vec3 a_vertex_color;
 
 out vec3 vertex_color;
-
-layout(std140) uniform Modifier{
-	float strength;
-	vec3  color;
-};
 
 layout(std140) uniform Transformations{
 	mat4 PVM;
