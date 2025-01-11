@@ -32,20 +32,12 @@ void SimpleShapeApplication::init() {
      };
     std::vector<GLfloat> vertices = {
         // roof
-        0.0f, 0.5f, 0.0f,   
-        1,0,0,
-
-        -0.5f, 0.0f, 0.0f,  
-        1,0,0,
-
-        0.5f, 0.0f, 0.0f,
-        1,0,0,
-
+        0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+        -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+        0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
         //walls
-        0.5f, -0.5f, 0.0f,
-        0,1,0,
-        -0.5f, -0.5f, 0.0f,
-        0,1,0
+        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+        -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f
     };
 
     GLuint modifier_u_buffer_handle;

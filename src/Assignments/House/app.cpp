@@ -15,7 +15,8 @@ void SimpleShapeApplication::init() {
     // As everything in OpenGL we reference program by an integer "handle".
     auto program = xe::utils::create_program(
             {{GL_VERTEX_SHADER,   std::string(PROJECT_DIR) + "/shaders/base_vs.glsl"},
-             {GL_FRAGMENT_SHADER, std::string(PROJECT_DIR) + "/shaders/base_fs.glsl"}});
+        {GL_FRAGMENT_SHADER, std::string(PROJECT_DIR) + "/shaders/base_fs.glsl"}}
+    );
 
     if (!program) {
         std::cerr << "Invalid program" << std::endl;
@@ -25,17 +26,17 @@ void SimpleShapeApplication::init() {
     // A vector containing the x,y,z vertex coordinates for the triangle.
     std::vector<GLfloat> vertices = {
         //roof
-            -0.5f, 0.0f, 0.0f,
-            0.5f, 0.0f, 0.0f,
-            0.0f, 0.5f, 0.0f,
+        -0.5f, 0.0f, 0.0f,
+        0.5f, 0.0f, 0.0f,
+        0.0f, 0.5f, 0.0f,
         //walls
-            -0.5f, -0.5f, 0.0f,
-            0.5f, -0.5f, 0.0f,
-            -0.5f,  0.0f, 0.0f,
-            0.5f, -0.5f, 0.0f,
-            0.5f,  0.0f, 0.0f,
-            -0.5f,  0.0f, 0.0f
-            };
+        -0.5f, -0.5f, 0.0f,
+        0.5f, -0.5f, 0.0f,
+        -0.5f,  0.0f, 0.0f,
+        0.5f, -0.5f, 0.0f,
+        0.5f,  0.0f, 0.0f,
+        -0.5f,  0.0f, 0.0f
+    };
 
     // Generating the buffer and loading the vertex data into it.
     GLuint v_buffer_handle;
@@ -70,7 +71,7 @@ void SimpleShapeApplication::init() {
     glUseProgram(program);
 }
 
-//This functions is called every frame and does the actual rendering.
+    //This functions is called every frame and does the actual rendering.
 void SimpleShapeApplication::frame() {
     // Binding the VAO will setup all the required vertex buffers.
     glBindVertexArray(vao_);

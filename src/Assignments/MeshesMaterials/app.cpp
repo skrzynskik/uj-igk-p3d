@@ -32,25 +32,50 @@ void SimpleShapeApplication::init() {
     };
     std::vector<GLfloat> vertices = {
         // pyramid base
-         1.0f, 1.0f, 0.0f, 0.5f, 0.5f, 0.5f,
-         1.0f, -1.0f, 0.0f, 0.5f, 0.5f, 0.5f,
-        -1.0f, 1.0f, 0.0f, 0.5f, 0.5f, 0.5f,
-        -1.0f, -1.0f, 0.0f, 0.5f, 0.5f, 0.5f,
-         1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-        // apex
-        -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-        // pyramid walls
-         0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-         1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-         1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-         0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-         1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-        -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-         0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-        -1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-        -1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-         0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+         1.0f, 1.0f, 0.0f,
+         1.0f, -1.0f, 0.0f,
+        -1.0f, 1.0f, 0.0f,
+        -1.0f, -1.0f, 0.0f,
+        // 1st wall
+         1.0f, -1.0f, 0.0f,
+        -1.0f, -1.0f, 0.0f,
+         0.0f, 0.0f, 1.0f,
+        //2nd wall
+         1.0f, 1.0f, 0.0f,
+         1.0f, -1.0f, 0.0f,
+         0.0f, 0.0f, 1.0f,
+        //3rd wall
+         1.0f, 1.0f, 0.0f,
+        -1.0f, 1.0f, 0.0f,
+         0.0f, 0.0f, 1.0f,
+        //4th wall
+        -1.0f, 1.0f, 0.0f,
+        -1.0f, -1.0f, 0.0f,
+         0.0f, 0.0f, 1.0f,
     };
+
+
+    pyramid->allocate_vertex_buffer(vertices.size() * sizeof(GLfloat), GL_STATIC_DRAW);
+    pyramid->load_vertices(0, vertices.size() * sizeof(GLfloat), vertices.data());
+    pyramid->vertex_attrib_pointer(0, 3, GL_FLOAT, 3 * sizeof(GLfloat), 0);
+
+    pyramid->allocate_index_buffer(indices.size() * sizeof(GLshort), GL_STATIC_DRAW);
+    pyramid->load_indices(0, indices.size() * sizeof(GLshort), indices.data());
+
+    auto base_material = new xe::ColorMaterial(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
+    auto side_material_1 = new xe::ColorMaterial(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+    auto side_material_2 = new xe::ColorMaterial(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+    auto side_material_3 = new xe::ColorMaterial(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+    auto side_material_4 = new xe::ColorMaterial(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
+
+    pyramid->add_submesh(0, 3, base_material);
+    pyramid->add_submesh(3, 6, base_material);
+    pyramid->add_submesh(6, 9, side_material_1);
+    pyramid->add_submesh(9, 12, side_material_2);
+    pyramid->add_submesh(12, 15, side_material_3);
+    pyramid->add_submesh(15, 18, side_material_4);
+
+    add_submesh(pyramid);
 
     glm::vec3 camera_position = { 0,0,3 };
     glm::vec3 zero = { 0,0,0 };
@@ -74,47 +99,6 @@ void SimpleShapeApplication::init() {
     glUniformBlockBinding(program, transformationsBlockIndex, 1);
 
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-    GLuint modifier_u_buffer_handle;
-    GLuint modifierBlockIndex = glGetUniformBlockIndex(program, "Modifier");
-
-    float strength = 0.5f;
-    float color[3] = { 1,0,0 };
-    glGenBuffers(1, &modifier_u_buffer_handle);
-    glBindBuffer(GL_UNIFORM_BUFFER, modifier_u_buffer_handle);
-    glBufferData(GL_UNIFORM_BUFFER, 8 * sizeof(GLfloat), 0, GL_STATIC_DRAW);
-    glBindBufferBase(GL_UNIFORM_BUFFER, 0, modifier_u_buffer_handle);
-    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(strength), &strength);
-    glBufferSubData(GL_UNIFORM_BUFFER, 4 * sizeof(float), sizeof(color), color);
-    glUniformBlockBinding(program, modifierBlockIndex, 0);
-
-    glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-    GLuint vertex_buffer_handle;
-    glGenBuffers(1, &vertex_buffer_handle);
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_handle);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    GLuint indices_buffer_handle;
-    glGenBuffers(1, &indices_buffer_handle);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices_buffer_handle);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLshort), indices.data(), GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-    glGenVertexArrays(1, &vao_);
-    glBindVertexArray(vao_);
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_handle);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices_buffer_handle);
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), reinterpret_cast<GLvoid*>(0));
-
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), reinterpret_cast<GLvoid*>(3 * sizeof(GLfloat)));
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
 
     glClearColor(0.81f, 0.81f, 0.8f, 1.0f);
 

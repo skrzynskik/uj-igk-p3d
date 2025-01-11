@@ -34,35 +34,25 @@ void SimpleShapeApplication::init() {
     // A vector containing the x,y,z vertex coordinates for the triangle.
     std::vector<GLfloat> vertices = {
         // roof
-        0.0f, 0.5f, 0.0f,   
-        1,0,0,
-
-        -0.5f, 0.0f, 0.0f,  
-        1,0,0,
-
-        0.5f, 0.0f, 0.0f,
-        1,0,0,
-
-        // bottom side of the base
-        0.5f, -0.5f, 0.0f,
-        0,1,0,
-
-        // Top right side of the home base
-        -0.5f, -0.5f, 0.0f,
-        0,1,0
+        0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+        -0.5f, 0.0f, 0.0f, 1.0f,0.0f,0.0f,
+        0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+        //walls
+        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+        -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f
     };
 
     //generating the buffer and loading the index data into it.
-    GLuint i_buffer_handle;
-    glGenBuffers(1, &i_buffer_handle);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, i_buffer_handle);
+    GLuint index_buffer_handle;
+    glGenBuffers(1, &index_buffer_handle);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_handle);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLushort), indices.data(), GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     // Generating the buffer and loading the vertex data into it.
-    GLuint v_buffer_handle;
-    glGenBuffers(1, &v_buffer_handle);
-    glBindBuffer(GL_ARRAY_BUFFER, v_buffer_handle);
+    GLuint vertex_buffer_handle;
+    glGenBuffers(1, &vertex_buffer_handle);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_handle);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -70,7 +60,7 @@ void SimpleShapeApplication::init() {
     // the state of all vertex buffers needed for rendering
     glGenVertexArrays(1, &vao_);
     glBindVertexArray(vao_);
-    glBindBuffer(GL_ARRAY_BUFFER, v_buffer_handle);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_handle);
 
     // This indicates that the data for attribute 0 should be read from a vertex buffer.
     glEnableVertexAttribArray(0);
@@ -83,7 +73,7 @@ void SimpleShapeApplication::init() {
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, i_buffer_handle);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_handle);
     glBindVertexArray(0);
     //end of vao "recording"
 
