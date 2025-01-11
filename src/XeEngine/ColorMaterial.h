@@ -12,7 +12,6 @@ namespace xe {
     class ColorMaterial : public Material {
     public:
 
-        static void init();
 
         static GLuint program() { return shader_; }
 
@@ -23,11 +22,15 @@ namespace xe {
 
         ColorMaterial(const glm::vec4 color) : ColorMaterial(color, 0) {}
 
-        void set_texture(GLuint tex) { texture_ = tex; }
+        void set_texture(GLuint texture) { texture_ = texture; }
+        GLuint get_texture() const { return texture_; }
+
+        void set_texture_unit(GLuint unit) { texture_unit_ = unit; }
+        GLuint get_texture_unit() const { return texture_unit_; }
 
         void bind() override;
-
         void unbind() override;
+        static void init();
 
 
     private:
