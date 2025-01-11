@@ -1,3 +1,11 @@
+brew install make gcc cmake (macos)
+
+repo contains a lot of opengl gibberish, at some point might useful (probably not). 
+i'd use clion if i were you.
+
+
+
+
 # A 3D graphics programming project.
 
 This repository contains the "Hello World!" equivalent for OpenGL C++ programming.  This will be the starting point for your assignments. 
